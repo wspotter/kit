@@ -43,8 +43,14 @@ function Bubble({ m }: { m: ChatMessage }) {
 
 export default function ChatWindow({
   messages,
+  draft,
+  onDraftChange,
+  onSend,
 }: {
   messages: ChatMessage[];
+  draft: string;
+  onDraftChange: (next: string) => void;
+  onSend: () => void;
 }) {
   return (
     <section className="flex h-[calc(100vh-160px)] flex-col rounded-[32px] border-4 border-zinc-900/10 bg-white/30 p-5 shadow-[0_16px_0_rgba(0,0,0,0.06)] backdrop-blur">
@@ -63,10 +69,18 @@ export default function ChatWindow({
         ))}
       </div>
 
-      <form className="mt-4 flex gap-3" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="mt-4 flex gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSend();
+        }}
+      >
         <input
           className="flex-1 rounded-2xl border-2 border-zinc-900/20 bg-white/80 px-4 py-3 text-sm outline-none focus:border-[var(--atomic-teal)]"
           placeholder="Tell Kit what to do…"
+          value={draft}
+          onChange={(e) => onDraftChange(e.target.value)}
         />
         <button type="submit" className="kit-button">
           Zap It

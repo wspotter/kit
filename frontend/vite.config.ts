@@ -6,5 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/modules': 'http://localhost:8000',
+      '/proxy': 'http://localhost:8000',
+    },
   },
 });
