@@ -1,0 +1,6 @@
+{
+  "keywords_allow": ["atomic", "starburst", "mcm", "googie"],
+  "keywords_block": ["rtx"],
+  "max_price_usd": 120,
+  "conditions_allow": ["used", "new"]
+}
