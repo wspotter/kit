@@ -93,6 +93,8 @@ python scripts/validate_tools.py
 
 Want a step-by-step guide? See: `docs/MODULE_TUTORIAL.md`.
 
+Docs index + templates: `docs/README.md`.
+
 ## Atomic Era palette
 
 - Teal: `#008080`
