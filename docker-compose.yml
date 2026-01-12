@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  kit-engine:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: kit-engine
+    ports:
+      - "3000:8080"
+    environment:
+      - 'WEBUI_NAME=Kit'
+      - 'OPENAI_API_BASE_URL=http://[AMD_SERVER_IP]:8080/v1'
+      - 'OPENAI_API_KEY=none'
+      - 'AUDIO_STT_ENGINE=openai'
+      - 'AUDIO_STT_OPENAI_API_BASE_URL=http://[NVIDIA_SERVER_IP]:5001/v1'
+      - 'AUDIO_TTS_ENGINE=openai'
+      - 'AUDIO_TTS_OPENAI_API_BASE_URL=http://[NVIDIA_SERVER_IP]:5002/v1'
+    volumes:
+      - kit_data:/app/backend/data
+    restart: always
+
+volumes:
+  kit_data:

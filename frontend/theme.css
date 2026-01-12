@@ -1,0 +1,11 @@
+:root {
+  --atomic-teal: #008080;
+  --atomic-tangerine: #FF8C00;
+  --atomic-mustard: #E1AD01;
+  --atomic-beige: #F1E4B7;
+}
+
+body {
+  background-color: var(--atomic-beige);
+  font-family: 'Futura', 'Gill Sans', sans-serif;
+}
