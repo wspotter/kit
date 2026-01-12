@@ -3,6 +3,20 @@ TOOL_DEFINITION = {
     "name": "Inbox Cleaner",
     "icon": "envelope",
     "description": "Inbox cleanup powered by the Ralph Loop (not implemented yet).",
+
+    # Contract / governance
+    "version": "0.1.0",
+    "ralph_loop": True,
+    "allow_network": "none",
+    "allow_filesystem": "none",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "dry_run": {"type": "boolean", "default": True},
+        },
+        "required": [],
+        "additionalProperties": False,
+    },
 }
 
 

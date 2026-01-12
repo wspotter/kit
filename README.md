@@ -54,6 +54,43 @@ export OPENWEBUI_BASE_URL=http://localhost:3000
 export OPENWEBUI_PROXY_TIMEOUT=30
 ```
 
+## Tool/module submission contract
+
+A Python file in `app/modules/` only qualifies as a **tool module** if it meets
+the contract below.
+
+### Required exports
+
+1) `TOOL_DEFINITION` (dict)
+
+Required keys:
+- `id` (string)
+- `name` (string)
+- `description` (string)
+- `version` (string)
+- `ralph_loop` (boolean)
+- `allow_network` (`none|read|write`)
+- `allow_filesystem` (`none|read|write`)
+- `input_schema` (dict; JSON-schema-ish)
+
+Optional keys:
+- `icon` (string)
+
+2) `run(payload: dict) -> Any`
+
+### Safety policy
+
+- Tools marked as `mock: true` are rejected.
+- Tools that fail validation are not discoverable/runnable.
+
+### Validate tools
+
+Run the validator from repo root:
+
+```bash
+python scripts/validate_tools.py
+```
+
 ## Atomic Era palette
 
 - Teal: `#008080`

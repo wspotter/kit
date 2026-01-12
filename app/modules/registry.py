@@ -21,6 +21,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 
+from .contract import coerce_contract, validate_tool_definition
+
 router = APIRouter()
 
 
@@ -31,6 +33,7 @@ class Tool:
     icon: str = "tool"
     description: str = ""
     module: str = ""
+    version: str = "0.0.0"
 
 
 TOOLS: Dict[str, Tool] = {}
@@ -43,15 +46,20 @@ def _is_loadable_module(name: str) -> bool:
 
 def _extract_tool(module: ModuleType, fallback_id: str) -> Optional[Tool]:
     td = getattr(module, "TOOL_DEFINITION", None)
-    if not isinstance(td, dict):
+    validation = validate_tool_definition(td)
+    if not validation.ok:
+        # Keep it out of discovery entirely; unsafe/incomplete.
         return None
 
+    contract = coerce_contract(td)
+
     return Tool(
-        id=str(td.get("id", fallback_id)),
-        name=str(td.get("name", fallback_id)),
-        icon=str(td.get("icon", "tool")),
-        description=str(td.get("description", "")),
+        id=str(contract.id or fallback_id),
+        name=str(contract.name or fallback_id),
+        icon=str(getattr(contract, "icon", "tool")),
+        description=str(contract.description),
         module=str(td.get("module", module.__name__)),
+        version=str(contract.version),
     )
 
 
