@@ -1,0 +1,85 @@
+@import '../../theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Atomic Era typography */
+:root {
+  --kit-shadow: rgba(0, 0, 0, 0.16);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.font-display {
+  font-family: 'Futura', 'Gill Sans', system-ui, sans-serif;
+}
+
+/* Boomerang shape */
+.kit-boomerang {
+  width: 34px;
+  height: 34px;
+  background: var(--atomic-tangerine);
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  position: relative;
+  transform: rotate(-20deg);
+  box-shadow: 0 10px 0 var(--kit-shadow);
+}
+.kit-boomerang::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 999px;
+  background: var(--atomic-teal);
+  transform: translate(7px, -3px);
+  opacity: 0.85;
+}
+
+.kit-sidebar-item {
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  transition: transform 120ms ease, background 120ms ease;
+}
+.kit-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.kit-button {
+  border-radius: 999px;
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  background: var(--atomic-teal);
+  color: var(--atomic-beige);
+  padding: 10px 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  box-shadow: 0 10px 0 var(--kit-shadow);
+  transition: transform 120ms ease;
+}
+.kit-button:hover {
+  transform: translateY(-1px);
+}
+.kit-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 6px 0 var(--kit-shadow);
+}
+
+.kit-mascot {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 0 var(--kit-shadow);
+}

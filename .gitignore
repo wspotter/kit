@@ -12,6 +12,9 @@ frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 
+# Temporary backup created during repo merge
+.git_frontend_backup/
+
 # OS
 .DS_Store
 
