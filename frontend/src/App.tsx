@@ -17,7 +17,7 @@ export default function App() {
       id: 'm2',
       role: 'system',
       content:
-        'Try: “ebay atomic” or “ebay starburst”. (We’ll route more tools soon.)',
+        'Try: “inbox”. (We’ll route more tools soon.)',
     },
   ]);
 
@@ -29,10 +29,10 @@ export default function App() {
     const id = crypto.randomUUID();
     setMessages((m) => [...m, { id, role: 'user', content: text }]);
 
-    // Very small command router for now.
-    // "ebay <query>" -> run ebay tool
+  // Very small command router for now.
+  // "inbox" -> run inbox tool
     const [cmd, ...rest] = text.split(' ');
-    const toolId = cmd.toLowerCase() === 'ebay' ? 'ebay' : null;
+  const toolId = cmd.toLowerCase() === 'inbox' ? 'inbox' : null;
     const query = rest.join(' ').trim();
 
     if (!toolId) {
@@ -42,7 +42,7 @@ export default function App() {
           id: crypto.randomUUID(),
           role: 'assistant',
           content:
-            "Hot dog! I don't recognize that command yet. Try `ebay <search query>`.",
+            "Hot dog! I don't recognize that command yet. Try `inbox`.",
         },
       ]);
       return;
@@ -69,8 +69,9 @@ export default function App() {
         {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content:
-            `Results:\n${JSON.stringify(json.result, null, 2)}`,
+          kind: 'tool_result',
+          toolId,
+          result: json.result,
         },
       ]);
     } catch (err) {
@@ -80,8 +81,7 @@ export default function App() {
         {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content:
-            `Gee Whiz! Something went wrong!\n${String(err)}`,
+          content: `Hold the phone!\n${String(err)}`,
         },
       ]);
     }

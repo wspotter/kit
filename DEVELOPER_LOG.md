@@ -57,13 +57,10 @@ Location: `app/modules/registry.py`
   - `GET /modules/list` returns discovered tools
   - `POST /modules/run/{tool_id}` runs the tool
 
-### ✅ First tool: eBay Watcher (mock)
-Location: `app/modules/ebay_watcher.py`
+### ✅ Tooling note: no mock tools
 
-- Implements a Ralph Loop (Observe → Execute → Verify → Self-Correct).
-- Uses a mock listing corpus for now.
-- “Long Term Memory” prefs are mocked as JSON:
-  - `app/ltm/preferences.json`
+Kit deliberately avoids demo/mock tools. If a capability isn't real enough to
+ship, it shouldn't be discoverable or runnable.
 
 ### Minor cleanup
 - `app/modules/inbox_cleaner.py` now has a `TOOL_DEFINITION` and a placeholder `run()` so it shows up in discovery.
@@ -80,7 +77,6 @@ Location: `app/modules/ebay_watcher.py`
 ## Next steps
 - Wire the frontend chat input to call the backend proxy and/or tool routes.
 - Decide the stable tool schema (inputs/outputs) and add per-tool validation.
-- Add real Open WebUI proxy route mapping for chat completions once confirmed.
+- Add real integrations for tools (no mocks) or keep tools marked "not implemented".
 - Add tests:
   - unit tests for `registry.discover_tools()`
-  - unit tests for `ebay_watcher._matches_preferences()`

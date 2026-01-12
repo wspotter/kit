@@ -4,9 +4,11 @@ Drop new modules into `app/modules/*.py` and they will automatically show up
 in `/modules/list`.
 
 Tool contract (minimal, for now):
-- module exposes a dict `TOOL_DEFINITION`
-  { id, name, icon, description }
+- module exposes a dict `TOOL_DEFINITION` { id, name, icon, description }
 - module optionally exposes `run(payload: dict) -> Any`
+
+Note: Kit deliberately avoids mock/demo tools. If a tool isn't real enough to
+ship, it shouldn't be discoverable.
 """
 
 from __future__ import annotations
@@ -87,9 +89,13 @@ async def list_modules():
 async def run_tool(tool_id: str, payload: Dict[str, Any]):
     discover_tools()
 
+    tool = TOOLS.get(tool_id)
+    if not tool:
+        raise HTTPException(status_code=404, detail=f"Unknown tool: {tool_id}")
+
     runner = RUNNERS.get(tool_id)
     if not runner:
-        raise HTTPException(status_code=404, detail=f"Unknown tool: {tool_id}")
+        raise HTTPException(status_code=501, detail=f"Tool has no runner: {tool_id}")
 
     result = runner(payload)
     return {"tool_id": tool_id, "result": result}

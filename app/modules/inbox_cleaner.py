@@ -2,7 +2,7 @@ TOOL_DEFINITION = {
     "id": "inbox",
     "name": "Inbox Cleaner",
     "icon": "envelope",
-    "description": "Mock inbox cleanup powered by the Ralph Loop.",
+    "description": "Inbox cleanup powered by the Ralph Loop (not implemented yet).",
 }
 
 

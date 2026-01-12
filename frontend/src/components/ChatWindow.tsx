@@ -1,8 +1,28 @@
+import ToolResult from './ToolResult';
+
 export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant' | 'system';
-  content: string;
+  content?: string;
+  kind?: 'text' | 'tool_result';
+  toolId?: string;
+  result?: unknown;
 };
+
+function ToolBanner({ toolId }: { toolId?: string }) {
+  return (
+    <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border-2 border-[var(--atomic-teal)] bg-white/60 px-4 py-2">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--atomic-teal)]">
+        tool result
+      </div>
+      {toolId ? (
+        <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-700">
+          {toolId}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 function Bubble({ m }: { m: ChatMessage }) {
   const isUser = m.role === 'user';
@@ -35,7 +55,16 @@ function Bubble({ m }: { m: ChatMessage }) {
         <div className="mb-2 text-[10px] uppercase tracking-[0.25em] opacity-80">
           {m.role}
         </div>
-        <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
+        {m.kind === 'tool_result' ? (
+          <>
+            <ToolBanner toolId={m.toolId} />
+            <div className="leading-relaxed">
+              <ToolResult result={m.result} />
+            </div>
+          </>
+        ) : (
+          <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
+        )}
       </div>
     </div>
   );

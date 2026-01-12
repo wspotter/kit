@@ -1,1 +1,5 @@
-fastapi\nuvicorn\nrequests\npython-multipart
+fastapi
+uvicorn
+requests
+python-multipart
+pytest
