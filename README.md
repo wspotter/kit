@@ -8,6 +8,8 @@ Kit is a 1950s/60s Atomic Era-themed assistant.
 
 ## Quickstart
 
+Want the most reliable start/verify workflow? See: `DEV_QUICKSTART.md`.
+
 ### 1) Backend (FastAPI)
 
 Install deps:

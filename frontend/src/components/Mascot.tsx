@@ -35,12 +35,12 @@ export default function Mascot({ state }: { state: MascotState }) {
         role="img"
         aria-label="Kit mascot"
       >
-        <img
-          src="/src/assets/kit/kit-cat.svg"
-          alt="Kit the Atomic Cat"
-          className="h-14 w-14"
-          draggable={false}
-        />
+          <img
+            src="/src/assets/kit/kit.png"
+            alt="Kit the Atomic Cat"
+            className="h-14 w-14"
+            draggable={false}
+          />
       </motion.div>
     </div>
   );

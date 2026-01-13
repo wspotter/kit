@@ -1,7 +1,11 @@
 :root {
-  --atomic-teal: #008080;
-  --atomic-tangerine: #FF8C00;
-  --atomic-mustard: #E1AD01;
+  /* Main palette inspired by the mid-century fabric pattern.
+     Teal + pink are tuned to match the Printery logo. */
+  --atomic-teal: #1BA8A5;
+  --atomic-pink: #F2A0B8;
+  --atomic-tangerine: #E8773B;
+  --atomic-mustard: #D8A12E;
+  --atomic-lime: #A9B44C;
   --atomic-beige: #F1E4B7;
 }
 

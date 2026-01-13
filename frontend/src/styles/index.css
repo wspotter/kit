@@ -56,8 +56,8 @@ body {
 .kit-button {
   border-radius: 999px;
   border: 3px solid rgba(0, 0, 0, 0.12);
-  background: var(--atomic-teal);
-  color: var(--atomic-beige);
+  background: linear-gradient(135deg, var(--atomic-teal), var(--atomic-pink));
+  color: rgba(0, 0, 0, 0.82);
   padding: 10px 14px;
   font-size: 12px;
   text-transform: uppercase;
@@ -65,12 +65,51 @@ body {
   box-shadow: 0 10px 0 var(--kit-shadow);
   transition: transform 120ms ease;
 }
+.kit-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 10px 0 var(--kit-shadow),
+    0 0 0 4px rgba(255, 255, 255, 0.65),
+    0 0 0 7px var(--atomic-mustard);
+}
 .kit-button:hover {
   transform: translateY(-1px);
 }
 .kit-button:active {
   transform: translateY(2px);
   box-shadow: 0 6px 0 var(--kit-shadow);
+}
+
+/* A secondary “chip” style for small labels / statuses */
+.kit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.kit-chip--pink {
+  background: color-mix(in srgb, var(--atomic-pink) 55%, white);
+}
+
+.kit-chip--lime {
+  background: color-mix(in srgb, var(--atomic-lime) 55%, white);
+}
+
+.kit-chip--mustard {
+  background: color-mix(in srgb, var(--atomic-mustard) 55%, white);
+}
+
+.kit-chip--tangerine {
+  background: color-mix(in srgb, var(--atomic-tangerine) 55%, white);
 }
 
 .kit-mascot {
@@ -82,4 +121,13 @@ body {
   background: rgba(255, 255, 255, 0.75);
   border: 3px solid rgba(0, 0, 0, 0.12);
   box-shadow: 0 12px 0 var(--kit-shadow);
+}
+
+/* Small dot used in the top chrome/status bar */
+.kit-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.65);
 }

@@ -1,106 +1,220 @@
-type EbayListing = {
-  title?: string;
-  price?: number;
-  condition?: string;
-  url?: string;
-  source?: string;
-};
-
-type EbayWatcherResult = {
-  status?: string;
-  attempt?: number;
-  verified_results?: EbayListing[];
-  rejected?: Array<{ listing?: EbayListing; reason?: string }>;
-  trace?: Array<{ step?: string; note?: string }>;
-};
-
 function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null;
 }
 
-function isEbayWatcherResult(v: unknown): v is EbayWatcherResult {
+type FsTriageResult = {
+  status?: string;
+  root?: string;
+  scanned_files?: number;
+  skipped?: string[];
+  largest?: Array<{ path?: string; size_mb?: number; size_bytes?: number }>;
+  oldest?: Array<{ path?: string; age_days?: number; mtime?: number }>;
+  trace?: Array<{ step?: string; note?: string }>;
+};
+
+type SystemHealthResult = {
+  status?: string;
+  data?: {
+    cpu_count?: number | null;
+    loadavg?: [number, number, number] | null;
+    uptime_seconds?: number | null;
+    memory?: {
+      mem_total_bytes?: number | null;
+      mem_available_bytes?: number | null;
+      swap_total_bytes?: number | null;
+      swap_free_bytes?: number | null;
+    };
+    disk?: {
+      path?: string;
+      total_bytes?: number;
+      used_bytes?: number;
+      free_bytes?: number;
+      used_pct?: number | null;
+    };
+    timestamp?: number;
+  };
+  trace?: Array<{ step?: string; note?: string }>;
+};
+
+function isFsTriageResult(v: unknown): v is FsTriageResult {
   if (!isObject(v)) return false;
-  // It's enough to detect the one field we care about for prettier output.
-  return 'verified_results' in v || 'rejected' in v || 'trace' in v;
+  return 'largest' in v || 'oldest' in v;
 }
 
-function MoneyBadge({ value }: { value: number }) {
-  return (
-    <span className="rounded-full border-2 border-zinc-900/15 bg-white/70 px-3 py-1 text-xs font-semibold text-zinc-900">
-      ${value.toFixed(2)}
-    </span>
-  );
+function isSystemHealthResult(v: unknown): v is SystemHealthResult {
+  if (!isObject(v)) return false;
+  return 'data' in v && isObject((v as any).data);
 }
 
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full border-2 border-zinc-900/10 bg-[var(--atomic-beige)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-800">
-      {children}
-    </span>
-  );
+function bytesToGiB(bytes: number | null | undefined) {
+  if (typeof bytes !== 'number') return '—';
+  return `${(bytes / 1024 ** 3).toFixed(2)} GiB`;
 }
 
-function ListingCard({ listing }: { listing: EbayListing }) {
+function BigStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-3xl border-2 border-zinc-900/10 bg-white/80 p-4 shadow-[0_10px_0_rgba(0,0,0,0.06)]">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="font-semibold leading-snug text-zinc-900">
-            {listing.title ?? 'Untitled listing'}
-          </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            {typeof listing.price === 'number' ? (
-              <MoneyBadge value={listing.price} />
-            ) : null}
-            {listing.condition ? <Chip>{listing.condition}</Chip> : null}
-            {listing.source ? <Chip>{listing.source}</Chip> : null}
-          </div>
-        </div>
-
-        {listing.url ? (
-          <a
-            className="kit-button whitespace-nowrap"
-            href={listing.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View
-          </a>
-        ) : null}
+    <div className="rounded-3xl border-2 border-zinc-900/10 bg-white/70 p-4">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-700">
+        {label}
+      </div>
+      <div className="mt-2 font-display text-2xl tracking-wide text-[var(--atomic-teal)]">
+        {value}
       </div>
     </div>
   );
 }
 
+function SectionHeader({ title, right }: { title: string; right?: string }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="inline-flex items-center gap-3">
+        <div className="h-3 w-3 rounded-full bg-[var(--atomic-teal)] shadow-[0_6px_0_rgba(0,0,0,0.12)]" />
+        <div className="font-display text-lg tracking-wide text-[var(--atomic-teal)]">
+          {title}
+        </div>
+        <div className="h-3 w-3 rounded-full bg-[var(--atomic-pink)] shadow-[0_6px_0_rgba(0,0,0,0.12)]" />
+      </div>
+      {right ? <div className="kit-chip kit-chip--mustard">{right}</div> : null}
+    </div>
+  );
+}
+
+function Panel({ title, tone, children }: { title: string; tone: 'mustard' | 'tangerine' | 'lime' | 'pink'; children: React.ReactNode }) {
+  const toneClass =
+    tone === 'mustard'
+      ? 'border-[var(--atomic-mustard)]'
+      : tone === 'tangerine'
+        ? 'border-[var(--atomic-tangerine)]'
+        : tone === 'lime'
+          ? 'border-[var(--atomic-lime)]'
+          : 'border-[var(--atomic-pink)]';
+
+  return (
+    <div className={`rounded-3xl border-2 ${toneClass} bg-white/70 p-4`}>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-700">
+        {title}
+      </div>
+      <div className="mt-3">{children}</div>
+    </div>
+  );
+}
+
 export default function ToolResult({ result }: { result: unknown }) {
-  if (isEbayWatcherResult(result)) {
-    const verified = Array.isArray(result.verified_results)
-      ? result.verified_results
-      : [];
+  if (isSystemHealthResult(result)) {
+    const d = result.data ?? {};
+    const mem = d.memory ?? {};
+    const disk = d.disk ?? {};
+
+    const load = Array.isArray(d.loadavg)
+      ? d.loadavg.map((x) => x.toFixed(2)).join(' / ')
+      : '—';
+
+    const uptime =
+      typeof d.uptime_seconds === 'number'
+        ? `${(d.uptime_seconds / 3600).toFixed(2)} hrs`
+        : '—';
 
     return (
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="font-display text-lg tracking-wide text-[var(--atomic-teal)]">
-            Verified Results
-          </div>
-          <div className="text-xs uppercase tracking-[0.25em] text-zinc-700">
-            {verified.length} hit{verified.length === 1 ? '' : 's'}
-          </div>
+        <SectionHeader title="System Health" right={result.status ?? 'unknown'} />
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <BigStat label="Load avg" value={load} />
+          <BigStat label="Uptime" value={uptime} />
+          <BigStat
+            label="Disk used"
+            value={
+              typeof disk.used_pct === 'number' ? `${disk.used_pct}%` : '—'
+            }
+          />
         </div>
 
-        {verified.length > 0 ? (
-          <div className="grid gap-3 md:grid-cols-2">
-            {verified.map((l, idx) => (
-              <ListingCard key={`${l.title ?? 'listing'}-${idx}`} listing={l} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-3xl border-2 border-zinc-900/10 bg-white/60 p-4 text-sm text-zinc-800">
-            Nothing verified yet. Kit may need different preferences, a wider
-            query, or a better data source.
-          </div>
-        )}
+        <div className="grid gap-3 md:grid-cols-2">
+          <Panel title="Memory" tone="lime">
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <span className="text-zinc-700">Total</span>
+                <span className="font-semibold">{bytesToGiB(mem.mem_total_bytes)}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-zinc-700">Available</span>
+                <span className="font-semibold">
+                  {bytesToGiB(mem.mem_available_bytes)}
+                </span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-zinc-700">Swap</span>
+                <span className="font-semibold">
+                  {bytesToGiB(mem.swap_free_bytes)} / {bytesToGiB(mem.swap_total_bytes)}
+                </span>
+              </div>
+            </div>
+          </Panel>
+
+          <Panel title="Disk" tone="tangerine">
+            <div className="text-xs text-zinc-700">{disk.path ?? '—'}</div>
+            <div className="mt-3 space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <span className="text-zinc-700">Used</span>
+                <span className="font-semibold">{bytesToGiB(disk.used_bytes)}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-zinc-700">Free</span>
+                <span className="font-semibold">{bytesToGiB(disk.free_bytes)}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-zinc-700">Total</span>
+                <span className="font-semibold">{bytesToGiB(disk.total_bytes)}</span>
+              </div>
+            </div>
+          </Panel>
+        </div>
+
+        <details className="rounded-3xl border-2 border-zinc-900/10 bg-white/50 p-4">
+          <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.25em] text-zinc-700">
+            Raw payload
+          </summary>
+          <pre className="mt-3 overflow-auto rounded-2xl bg-white/60 p-3 text-xs">
+            {JSON.stringify(result, null, 2)}
+          </pre>
+        </details>
+      </div>
+    );
+  }
+
+  if (isFsTriageResult(result)) {
+    const largest = Array.isArray(result.largest) ? result.largest : [];
+    const oldest = Array.isArray(result.oldest) ? result.oldest : [];
+
+    return (
+      <div className="space-y-4">
+        <SectionHeader title="Filesystem Triage" right={`${result.scanned_files ?? 0} scanned`} />
+
+        <div className="grid gap-3 md:grid-cols-2">
+          <Panel title="Largest files" tone="mustard">
+            <div className="space-y-2 text-sm">
+              {largest.slice(0, 10).map((f, idx) => (
+                <div key={`${f.path ?? 'file'}-${idx}`} className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 truncate text-zinc-800">{f.path ?? '—'}</div>
+                  <div className="shrink-0 font-semibold text-[var(--atomic-teal)]">{typeof f.size_mb === 'number' ? `${f.size_mb} MB` : '—'}</div>
+                </div>
+              ))}
+              {largest.length === 0 ? <div className="text-zinc-700">No data.</div> : null}
+            </div>
+          </Panel>
+
+          <Panel title="Oldest files" tone="pink">
+            <div className="space-y-2 text-sm">
+              {oldest.slice(0, 10).map((f, idx) => (
+                <div key={`${f.path ?? 'file'}-${idx}`} className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 truncate text-zinc-800">{f.path ?? '—'}</div>
+                  <div className="shrink-0 font-semibold text-[var(--atomic-tangerine)]">{typeof f.age_days === 'number' ? `${f.age_days} d` : '—'}</div>
+                </div>
+              ))}
+              {oldest.length === 0 ? <div className="text-zinc-700">No data.</div> : null}
+            </div>
+          </Panel>
+        </div>
 
         <details className="rounded-3xl border-2 border-zinc-900/10 bg-white/50 p-4">
           <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.25em] text-zinc-700">

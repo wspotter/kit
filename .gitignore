@@ -20,3 +20,8 @@ frontend/.vite/
 
 # Editor
 .vscode/
+
+# Local scratch assets (avoid committing accidental drag-drops at repo root)
+/*.png
+/*.jpg
+/*.jpeg

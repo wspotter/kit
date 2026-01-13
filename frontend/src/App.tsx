@@ -17,7 +17,7 @@ export default function App() {
       id: 'm2',
       role: 'system',
       content:
-        'Try: “inbox”. (We’ll route more tools soon.)',
+        'Try: “health” or “fs /var/log” or “inbox”.',
     },
   ]);
 
@@ -30,10 +30,14 @@ export default function App() {
     setMessages((m) => [...m, { id, role: 'user', content: text }]);
 
   // Very small command router for now.
-  // "inbox" -> run inbox tool
+  // inbox -> run inbox tool
+  // health -> system health summary
+  // fs <path> -> filesystem triage
     const [cmd, ...rest] = text.split(' ');
-  const toolId = cmd.toLowerCase() === 'inbox' ? 'inbox' : null;
-    const query = rest.join(' ').trim();
+    const normalized = cmd.toLowerCase();
+    const toolId =
+      normalized === 'inbox' ? 'inbox' : normalized === 'health' ? 'health' : normalized === 'fs' ? 'fs' : null;
+    const argText = rest.join(' ').trim();
 
     if (!toolId) {
       setMessages((m) => [
@@ -42,7 +46,7 @@ export default function App() {
           id: crypto.randomUUID(),
           role: 'assistant',
           content:
-            "Hot dog! I don't recognize that command yet. Try `inbox`.",
+            "Hot dog! I don't recognize that command yet. Try `health`, `fs <path>`, or `inbox`.",
         },
       ]);
       return;
@@ -53,7 +57,13 @@ export default function App() {
       const resp = await fetch(`/modules/run/${toolId}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify(
+          toolId === 'fs'
+            ? { path: argText || '.' }
+            : toolId === 'inbox'
+              ? { dry_run: true }
+              : {},
+        ),
       });
 
       const json = await resp.json();
@@ -93,34 +103,37 @@ export default function App() {
         <Sidebar />
 
         <main className="relative flex flex-col">
-          <header className="flex items-center justify-between border-b-4 border-[var(--atomic-teal)] bg-white/60 px-6 py-4 backdrop-blur">
+          {/* Top chrome bar (mockup-style UI line) */}
+          <div className="flex items-center justify-between border-b-2 border-zinc-900/10 bg-white/40 px-6 py-2 text-[11px] uppercase tracking-[0.25em] text-zinc-700 backdrop-blur">
+            <div className="flex items-center gap-2">
+              <span className="kit-status-dot bg-[var(--atomic-teal)]" aria-hidden="true" />
+              <span>Control Room</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="kit-status-dot bg-[var(--atomic-mustard)]" aria-hidden="true" />
+              <span>Ralph Loop</span>
+            </div>
+          </div>
+
+          <header className="flex flex-wrap items-center justify-between gap-4 border-b-4 border-[var(--atomic-teal)] bg-white/60 px-6 py-4 backdrop-blur">
             <div>
               <h1 className="font-display text-3xl tracking-wide text-[var(--atomic-teal)]">
-                Kit Control Room
+                Kit
               </h1>
               <p className="text-sm text-zinc-700">
-                Boomerangs, starbursts, and good clean compute.
+                Atomic assistant — tools you can trust.
               </p>
             </div>
 
             <div className="flex items-center gap-4">
               <div className="hidden md:flex gap-2">
-                <button
-                  className="kit-button"
-                  onClick={() => setMascotState('idle')}
-                >
+                <button className="kit-button" onClick={() => setMascotState('idle')}>
                   Idle
                 </button>
-                <button
-                  className="kit-button"
-                  onClick={() => setMascotState('thinking')}
-                >
+                <button className="kit-button" onClick={() => setMascotState('thinking')}>
                   Thinking
                 </button>
-                <button
-                  className="kit-button"
-                  onClick={() => setMascotState('success')}
-                >
+                <button className="kit-button" onClick={() => setMascotState('success')}>
                   Success
                 </button>
               </div>
@@ -130,12 +143,14 @@ export default function App() {
           </header>
 
           <div className="flex-1 p-6">
-            <ChatWindow
-              messages={messages}
-              draft={draft}
-              onDraftChange={setDraft}
-              onSend={handleSend}
-            />
+            <div className="mx-auto max-w-[1100px]">
+              <ChatWindow
+                messages={messages}
+                draft={draft}
+                onDraftChange={setDraft}
+                onSend={handleSend}
+              />
+            </div>
           </div>
 
           <footer className="border-t-2 border-zinc-900/10 bg-white/40 px-6 py-3 text-xs text-zinc-700">

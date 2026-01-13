@@ -12,10 +12,11 @@ const items: SidebarItem[] = [
 
 export default function Sidebar() {
   return (
-    <aside className="relative overflow-hidden border-r-4 border-[var(--atomic-teal)] bg-[var(--atomic-teal)] text-[var(--atomic-beige)]">
+    <aside className="relative overflow-hidden border-r-4 border-[var(--atomic-teal)] bg-[linear-gradient(160deg,var(--atomic-teal),var(--atomic-pink))] text-zinc-900">
       {/* Atomic starburst backdrop */}
-      <div className="pointer-events-none absolute -top-24 -left-24 h-64 w-64 rounded-full bg-[var(--atomic-mustard)] opacity-30 blur-sm" />
-      <div className="pointer-events-none absolute top-24 -right-32 h-80 w-80 rounded-full bg-[var(--atomic-tangerine)] opacity-25 blur-sm" />
+      <div className="pointer-events-none absolute -top-24 -left-24 h-64 w-64 rounded-full bg-[var(--atomic-mustard)] opacity-35 blur-sm" />
+      <div className="pointer-events-none absolute top-24 -right-32 h-80 w-80 rounded-full bg-[var(--atomic-tangerine)] opacity-30 blur-sm" />
+      <div className="pointer-events-none absolute -bottom-40 left-10 h-80 w-80 rounded-full bg-[var(--atomic-lime)] opacity-20 blur-sm" />
 
       <div className="relative flex h-full flex-col p-6">
         <div className="mb-8">
@@ -44,7 +45,7 @@ export default function Sidebar() {
         </nav>
 
         <div className="mt-auto pt-8">
-          <div className="rounded-2xl border border-white/25 bg-white/10 p-4">
+          <div className="rounded-2xl border border-zinc-900/10 bg-white/25 p-4 backdrop-blur">
             <div className="font-display text-lg tracking-wide">Ralph Loop</div>
             <p className="mt-1 text-xs leading-relaxed opacity-90">
               Observe → Execute → Verify → Self-Correct. Three tries max, then we
